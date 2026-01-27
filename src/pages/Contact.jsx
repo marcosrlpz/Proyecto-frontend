@@ -104,7 +104,6 @@ const Contact = () => {
     setServerError(null);
 
     try {
-      // Simulación de envío (luego puedes conectar EmailJS / backend)
       await new Promise((res) => setTimeout(res, 900));
       reset();
     } catch (e) {

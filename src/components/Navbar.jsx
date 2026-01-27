@@ -127,7 +127,7 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const location = useLocation();
 
-  // ✅ Cierra el menú móvil cada vez que cambie la ruta
+
   useEffect(() => {
     setOpen(false);
   }, [location.pathname]);

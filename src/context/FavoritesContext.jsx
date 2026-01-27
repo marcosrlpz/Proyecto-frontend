@@ -7,7 +7,7 @@ const STORAGE_KEY = "favorites_projects_v1";
 export function FavoritesProvider({ children }) {
   const [favorites, setFavorites] = useState([]);
 
-  // Cargar del localStorage al iniciar
+
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -17,7 +17,7 @@ export function FavoritesProvider({ children }) {
     }
   }, []);
 
-  // Guardar cada vez que cambie
+ 
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
