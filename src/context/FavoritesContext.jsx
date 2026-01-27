@@ -1,71 +1,52 @@
-import { createContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useEffect, useMemo, useState } from "react";
 
 export const FavoritesContext = createContext(null);
 
-const STORAGE_KEY = "portfolio:favorites";
+const STORAGE_KEY = "favorites_projects_v1";
 
-export const FavoritesProvider = ({ children }) => {
+export function FavoritesProvider({ children }) {
   const [favorites, setFavorites] = useState([]);
 
-  // ✅ Cargar desde localStorage (persistencia pro)
+  // Cargar del localStorage al iniciar
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) setFavorites(JSON.parse(raw));
-    } catch {
-      // si falla, no pasa nada
-      setFavorites([]);
+    } catch (e) {
+      console.error("Error leyendo favoritos:", e);
     }
   }, []);
 
-  // ✅ Guardar en localStorage cuando cambie
+  // Guardar cada vez que cambie
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
-    } catch {
-      // ignore
+    } catch (e) {
+      console.error("Error guardando favoritos:", e);
     }
   }, [favorites]);
 
-  const isFavorite = (id) => favorites.some((item) => item.id === id);
+  const isFavorite = useCallback(
+    (id) => favorites.some((p) => p.id === id),
+    [favorites]
+  );
 
-  const addFavorite = (project) => {
-    setFavorites((prev) => {
-      if (prev.some((p) => p.id === project.id)) return prev;
-      return [project, ...prev];
-    });
-  };
-
-  const removeFavorite = (id) => {
-    setFavorites((prev) => prev.filter((p) => p.id !== id));
-  };
-
-  const toggleFavorite = (project) => {
+  const toggleFavorite = useCallback((project) => {
     setFavorites((prev) => {
       const exists = prev.some((p) => p.id === project.id);
       if (exists) return prev.filter((p) => p.id !== project.id);
       return [project, ...prev];
     });
-  };
+  }, []);
 
-  const clearFavorites = () => setFavorites([]);
-
-  // ✅ useMemo para evitar re-renders innecesarios
   const value = useMemo(
     () => ({
       favorites,
       isFavorite,
-      addFavorite,
-      removeFavorite,
       toggleFavorite,
-      clearFavorites,
     }),
-    [favorites]
+    [favorites, isFavorite, toggleFavorite]
   );
 
-  return (
-    <FavoritesContext.Provider value={value}>
-      {children}
-    </FavoritesContext.Provider>
-  );
-};
+  return <FavoritesContext.Provider value={value}>{children}</FavoritesContext.Provider>;
+}

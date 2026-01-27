@@ -20,11 +20,13 @@ const Card = styled.article`
 const Title = styled.h3`
   font-size: 1.05rem;
   line-height: 1.2;
+  margin: 0;
 `;
 
 const Desc = styled.p`
   color: ${({ theme }) => theme.colors.muted};
   font-size: 0.95rem;
+  margin: 0;
 `;
 
 const TagRow = styled.div`
@@ -83,20 +85,26 @@ const LinkBtn = styled.a`
   }
 `;
 
-const ProjectCard = ({ id, title, description, tags = [], url }) => {
+export default function ProjectCard({ id, title, description, tags = [], url }) {
   const fav = useContext(FavoritesContext);
 
   const isFav = useMemo(() => fav?.isFavorite?.(id), [fav, id]);
 
   const projectPayload = useMemo(
-    () => ({ id, title, description, tags, url }),
+    () => ({
+      id,
+      title,
+      description: description || "Sin descripción",
+      tags,
+      url,
+    }),
     [id, title, description, tags, url]
   );
 
   return (
     <Card>
       <Title>{title}</Title>
-      <Desc>{description}</Desc>
+      <Desc>{description || "Sin descripción"}</Desc>
 
       {tags.length > 0 && (
         <TagRow>
@@ -119,6 +127,4 @@ const ProjectCard = ({ id, title, description, tags = [], url }) => {
       </Actions>
     </Card>
   );
-};
-
-export default ProjectCard;
+}
